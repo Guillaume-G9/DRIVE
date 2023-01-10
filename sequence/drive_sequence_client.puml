@@ -12,14 +12,16 @@ participant "Banque" as BQ
 participant "Service Notification" as Notif 
 actor Preparateur 
 
+group Initialization
 
-Client -> Controller: choisirMagasin(magasin)
-Controller --> Client: catalogueMagasin(magasin)
+    Client -> Controller: choisirMagasin(magasin)
+    Controller --> Client: catalogueMagasin(magasin)
 
-alt CreneauChoisi = true
-Client -> Controller: setCreneau(creneau)
-Controller --> Client: notificationCreneau(creneau)
-end alt
+    alt CreneauChoisi = true
+    Client -> Controller: setCreneau(creneau)
+    Controller --> Client: notificationCreneau(creneau)
+    end alt
+end
 
 group Gestion de Panier
 

@@ -34,7 +34,7 @@ else (non)
 endif
 
 :scanner produit;
-:ajouter produit au caddie;
+:enlever produit de la commande;
 repeat while () is (non complète) not (complète)
 }
 

@@ -1,0 +1,58 @@
+@startuml Séquence Préparation Commande
+
+title Préparer une Commande
+scale 0.8
+
+actor Préparateur as P
+actor Client as C
+actor Administrateur as Ad
+participant Database as DB
+participant ServiceDeNotification as ServiceNotif
+participant AppliDrive as Controller
+
+group Initialization
+    ServiceNotif -> P: notifCommandeRecue(commande)
+    P -> Controller: traitementCommande(commande)
+    Controller->DB: updateOrderStatus(commande, statusCommande='en traitement')
+    DB-->Controller: statusUpdated(status)
+    ServiceNotif --> Client : notifCommande(commande, statusCommande)
+end
+
+group Préparation
+    loop commandeReady = false
+    P -> Controller: requestProduct(produit)
+    alt inStock = false
+    Controller-->P: notificationOutofStock(produit)
+    P->Ad: OutofStock(produit, message)
+    alt replaceProduct = true
+    Controller->Controller: replaceBySimilarProduct(produit, similarProduct, commande)
+    Controller-->P: notifProduitRemplacé(produit, similarProduct)
+    else
+    Controller->Controller: deleteProductFromOrder(produit)
+    Controller-->P: notifProduitSupprimé(produit)
+    Controller->Controller: updateOrder(price, commande)
+    end alt
+    end alt
+end
+
+group Fin de procédure 
+    Controller-->P: productData(produit, emplacement)
+    P->Controller: scanProduct(produit, quantity)
+    Controller->DB: matchProduct(produit)
+    DB-->Controller: productIsOK = true
+    Controller->Controller: removeProductFromOrder(produit)
+    end loop
+
+    P->Controller: commandeValidee(commande)
+    Controller->DB: updateOrderStatus(commande, statusCommande='validée')
+    DB -->Controller: statusUpdated(status)
+    P->Controller: orderReadyToPickup()
+    Controller->DB: updateOrderStatus(commande, statusCommande='prête')
+    DB --> Controller: statusUpdated(status)
+    ServiceNotif -> C: notifOrderReady(commande)
+end
+
+
+
+
+@enduml
