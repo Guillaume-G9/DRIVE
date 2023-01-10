@@ -1,0 +1,99 @@
+@startuml Seq
+
+scale 0.5
+
+title Passer une commande
+
+actor Client
+
+participant "Appli Drive" as Controller 
+database "Database" as DB
+participant "Banque" as BQ 
+participant "Service Notification" as Notif 
+actor Preparateur 
+
+
+Client -> Controller: choisirMagasin(magasin)
+Controller --> Client: catalogueMagasin(magasin)
+
+alt CreneauChoisi = true
+Client -> Controller: setCreneau(creneau)
+Controller --> Client: notificationCreneau(creneau)
+end alt
+
+group Gestion de Panier
+
+    group Ajout au panier
+        Client -> Controller: ajouterProduit(produit, quantity)
+        Controller -> DB: verifierStock(produit)
+        DB --> Controller: instock
+        alt inStock = true
+        Controller -> Controller:addToCart(produit, quantity)
+        Controller --> Client: notifProduitAjoute(produit)
+        else
+        Controller --> Client: notInstock(produit, listeMagasinDispo)
+        end alt
+    end
+
+    group Modifier Panier
+        Client -> Controller: modifierPanier(panier,produit, quantity)
+        Controller -> Controller: updateCart(panier, produit, quantity)
+        Controller --> Client: panier(panier)
+    end
+
+    group Supprimer produit
+        Client -> Controller: suprimmerProduit(produit)
+        Controller -> Controller: deleteProduct(produit)
+        Controller --> Client: panier(panier)
+    end 
+end 
+
+Client -> Controller: consulterPanier()
+Controller -->Client: panier
+
+Client -> Controller: validerPanier(panier)
+alt isValid = false
+Client -> Controller: cartNotValid(panier)
+Controller -> Controller: deleteCart(panier)
+Controller --> Client: notifSuppressionPanier(panier)
+else
+Controller --> Client: recapitulatifCommande(panier)
+Controller -> Client: isCreneauOk(creneau)
+alt creneauIsOk = true
+Client --> Controller: creneauIsOk(creneau)
+else 
+Client -> Controller: changeCreneau(creneau)
+end alt
+
+group Processus paiement
+loop paiementOk = false
+Client -> Controller: initierPaiement(commande)
+Controller --> Client: formulairePaiement(commande, transaction)
+Client -> Controller: ValiderPaiement(commande, transaction)
+Controller -> BQ: payerCommande(transaction)
+alt paiementOk = false
+Controller -> Client: confirmCancelOrder(commande)
+Client --> Controller: confirmCancelOrder(commande)
+Controller -> Controller: deleteOrder(commande)
+Controller --> Client: notifOrderDeleted(commande)
+else
+BQ --> Controller: paiementOk
+Controller --> Client: notifPaiementValide(transaction)
+end alt
+
+
+end
+
+end loop
+
+par Fin de process
+Notif --> Client: commandeValide(commande)
+Controller -> DB: enregistrerCommande(commande)
+Notif --> Preparateur: commandeRecue(commande)
+end par
+end alt
+
+
+
+
+@enduml

@@ -1,0 +1,67 @@
+@startuml Activité Préparateur
+
+scale 0.75
+
+
+|DRIVE|
+start
+
+partition Initialization {
+
+
+:Notification commande reçue;
+
+:Confirmation traitement commande;
+
+|DATABASE|
+:changement statut commande(traitement);
+
+|SERVICE NOTIF|
+:envoi notification commande en traitement;
+
+}
+|DRIVE|
+
+partition PreparationCommande {
+
+
+repeat :commande ;
+:afficher produit à récupérer;
+if(produit indisponible?)then(oui)
+:notifier produit manquant;
+:notifier manager;
+else (non)
+endif
+
+:scanner produit;
+:ajouter produit au caddie;
+repeat while () is (non complète) not (complète)
+}
+
+partition FinProcess {
+
+:marquer commande comme validée;
+
+|DATABASE|
+:changement statut commande(traitée);
+
+'|SERVICE NOTIF|
+':notification commande terminée;
+
+|DRIVE|
+:déposer commande centre de retrait;
+
+|SERVICE NOTIF|
+:notification commande prête à être retirée;
+
+|DRIVE|
+:marquer commande comme déposée;
+|DATABASE|
+:changement statut commande(prête à être retirée);
+
+|DRIVE|
+
+}
+stop
+
+@enduml

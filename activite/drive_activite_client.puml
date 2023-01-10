@@ -1,0 +1,75 @@
+@startuml Activité Client
+
+scale 0.75
+
+
+
+|DRIVE|
+start
+
+partition Initialization {
+:utilisateur connecté;
+
+:choix magasin;
+if(pas de proposition magasin) then (oui)
+    :choisir magasin manuellement;
+endif
+
+
+if(créneau choisi?) then (oui)
+    :confirmation créneau;
+endif
+
+}
+
+partition ProcessPrincipal {
+
+:gérer le panier;
+}
+':ajout de produit au panier;
+'if (produit en stock ?) then (oui)
+ '   :ajout du produit au panier; 
+'else (non)
+  '  :affiche les magasins où produit dispo;
+'endif
+'split
+
+
+
+
+:validation panier;
+if(panier validé?) then (non)
+:annulation panier;
+stop
+else (oui)
+endif 
+
+:afficher récapitulatif commande;
+if(créneau validé?) then (non)
+:modification créneau;
+else (oui)
+endif
+
+partition FinProcessusPaiement {
+
+|BANQUE|
+repeat :procédure de paiement;
+repeat while () is (invalides) not (valides)
+:afficher commande validée;
+
+|DRIVE|
+|SERVICE NOTIF|
+fork
+:notification commande validée utilisateur;
+fork again
+:notification commande préparateur;
+|DATABASE|
+fork again
+:enregistrement de la commande en BD;
+end fork
+|DRIVE|
+}
+
+stop
+
+@enduml

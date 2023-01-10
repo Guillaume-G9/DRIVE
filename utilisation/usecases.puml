@@ -37,6 +37,7 @@ rectangle DRIVE {
 (Scanner produit) as ScannerProduit
 (Confirmer validation commande) as ValiderPrepCommande
 (Notification Client) as NotifClient
+(Retirer Commande) as RetirerCommande
 
 }
 
@@ -69,6 +70,9 @@ C -- ChoisirMagasinFavoris
 C -- GererListeCourses
 C -- GererCoordonnees
 C -- GererProduitsFavoris
+C -- RetirerCommande
+
+RetirerCommande ..> PasserCommande #red:include
 
 
 P ..> ConsulterCommandes #red : include
