@@ -1,0 +1,31 @@
+@startuml Activité Client
+
+start
+:utilisateur connecté;
+
+:choix magasin;
+if(pas de proposition magasin) then (oui)
+    :choisir magasin manuellement;
+endif
+
+
+if(créneau choisi?) then (oui)
+    :confirmation créneau;
+endif
+
+:ajout de produit au panier;
+if (produit en stock ?) then (oui)
+    :ajout du produit au panier; 
+else (non)
+    :affiche les magasins où produit dispo;
+endif
+
+'split
+'validation panier
+'validation commande (créneau)
+'paiement
+
+
+stop
+
+@enduml
