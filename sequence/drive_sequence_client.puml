@@ -101,6 +101,7 @@ end loop
 par Fin de process
 Notif --> Client: commandeValide(commande)
 Controller -> DB: enregistrerCommande(commande)
+Controller -> Notif: envoyerNotifCommande(commande)
 Notif --> Preparateur: commandeRecue(commande)
 end par
 end alt
