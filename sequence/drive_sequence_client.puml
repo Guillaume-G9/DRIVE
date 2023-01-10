@@ -18,7 +18,12 @@ group Initialization
     Controller --> Client: catalogueMagasin(magasin)
 
     alt CreneauChoisi = true
-    Client -> Controller: setCreneau(creneau)
+        loop isFull = true
+            Client -> Controller: setCreneau(creneau)
+            Controller -> DB: controlCreneau(creneau)
+            DB --> Controller: creneau(isFull)
+            Controller --> Client: creneauStatus(creneau, isFull)
+        end loop
     Controller --> Client: notificationCreneau(creneau)
     end alt
 end
@@ -64,7 +69,12 @@ Controller -> Client: isCreneauOk(creneau)
 alt creneauIsOk = true
 Client --> Controller: creneauIsOk(creneau)
 else 
-Client -> Controller: changeCreneau(creneau)
+    loop isFull = true
+                Client -> Controller: setCreneau(creneau)
+                Controller -> DB: controlCreneau(creneau)
+                DB --> Controller: creneau(isFull)
+                Controller --> Client: creneauStatus(creneau, isFull)
+    end loop
 end alt
 
 group Processus paiement

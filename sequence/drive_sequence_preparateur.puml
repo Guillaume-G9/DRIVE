@@ -18,8 +18,8 @@ group Initialization
     ServiceNotif --> Client : notifCommande(commande, statusCommande)
 end
 
-group Préparation
     loop commandeReady = false
+group Préparation
     P -> Controller: requestProduct(produit)
     alt inStock = false
     Controller-->P: notificationOutofStock(produit)
@@ -33,24 +33,25 @@ group Préparation
     Controller->Controller: updateOrder(price, commande)
     end alt
     end alt
-end
 
-group Fin de procédure 
+
     Controller-->P: productData(produit, emplacement)
     P->Controller: scanProduct(produit, quantity)
     Controller->DB: matchProduct(produit)
     DB-->Controller: productIsOK = true
     Controller->Controller: removeProductFromOrder(produit)
     end loop
-
-    P->Controller: commandeValidee(commande)
-    Controller->DB: updateOrderStatus(commande, statusCommande='validée')
-    DB -->Controller: statusUpdated(status)
-    P->Controller: orderReadyToPickup()
-    Controller->DB: updateOrderStatus(commande, statusCommande='prête')
-    DB --> Controller: statusUpdated(status)
-    ServiceNotif -> C: notifOrderReady(commande)
 end
+    group Fin de procédure
+        P->Controller: commandeValidee(commande)
+        Controller->DB: updateOrderStatus(commande, statusCommande='validée')
+        DB -->Controller: statusUpdated(status)
+        P->Controller: orderReadyToPickup()
+        Controller->DB: updateOrderStatus(commande, statusCommande='prête')
+        DB --> Controller: statusUpdated(status)
+        ServiceNotif -> C: notifOrderReady(commande)
+    end
+
 
 
 

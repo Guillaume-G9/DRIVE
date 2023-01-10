@@ -17,7 +17,8 @@ endif
 
 
 if(créneau choisi?) then (oui)
-    :confirmation créneau;
+    repeat :confirmation créneau; ;
+    repeat while () is (complet) not (disponible)
 endif
 
 }
@@ -44,9 +45,11 @@ stop
 else (oui)
 endif 
 
+:confirmer produits d'échange;
 :afficher récapitulatif commande;
 if(créneau validé?) then (non)
-:modification créneau;
+ repeat :modification créneau; ;
+    repeat while () is (complet) not (disponible)
 else (oui)
 endif
 
