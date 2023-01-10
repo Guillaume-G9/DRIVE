@@ -1,5 +1,7 @@
 @startuml Diagramme de classe
 
+hide circle
+skinparam classAttributeIconSize 0
 
 class Produit {
     -int codebarre
