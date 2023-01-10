@@ -1,0 +1,94 @@
+@startuml
+
+scale 0.50
+
+:Visiteur: as V
+:Client: as C
+:Préparateur: as P
+:Admnistrateur: as Ad
+
+agent "Service de notification" <<actor>> as ServiceNotif
+
+C -|> V
+Ad -|> V
+
+rectangle DRIVE {
+
+(Rechercher un produit) as RechercherProduit
+(Consulter le catalogue Global) as ConsulterCatalogueGlobal
+(Consulter le catalogue d'un rayon) as ConsulterRayon
+(Consulter le catalogue d'un magasin) as ConsulterCatalogueMagasin
+(Consulter un produit) as ConsulterProduit
+(S'authentifier) as Auth
+(Gérer le panier) as GererPanier
+(Passer une commande) as PasserCommande
+(Consulter ses commandes) as ConsulterCommandeClient
+(Consulter les commandes) as ConsulterCommandes
+(Selectionner/Modifier Magasin) as SelectionMagasin
+(Choisir/Modifier le magasin favori) as ChoisirMagasinFavoris
+(Gérer produit favori) as GererProduitsFavoris
+(Gérer liste de courses) as GererListeCourses
+(Gérer ses coordonnées) as GererCoordonnees
+(Choisir/Modifier son créneau) as ChoisirCreneau
+(Gérer les produits) as GérerProduits
+(ModifierCommande) as ModifierCommande
+(Gérer bons de réduction) as GererBonsReduction
+(Communiquer avec le chatbot) as CommunicationChatBot
+(Scanner produit) as ScannerProduit
+(Confirmer validation commande) as ValiderPrepCommande
+(Notification Client) as NotifClient
+
+}
+
+
+
+left to right direction
+V -- Auth
+V -- SelectionMagasin 
+V -- GererPanier
+V -- ConsulterCatalogueGlobal
+V -- ConsulterRayon
+V -- ConsulterCatalogueMagasin
+V -- ConsulterProduit
+V -- RechercherProduit
+V -- CommunicationChatBot
+
+SelectionMagasin ..> ConsulterCatalogueMagasin  #red : include
+SelectionMagasin ..> ConsulterRayon  #red : include
+
+Auth <.. C #red : include
+
+NotifClient --- ServiceNotif
+NotifClient --> C
+
+
+C -- ChoisirCreneau
+C -- PasserCommande
+C -- ConsulterCommandeClient
+C -- ChoisirMagasinFavoris 
+C -- GererListeCourses
+C -- GererCoordonnees
+C -- GererProduitsFavoris
+
+
+P ..> ConsulterCommandes #red : include
+P -- ConsulterCatalogueGlobal
+P -- ConsulterRayon
+P -- ConsulterCatalogueMagasin
+P -- ConsulterProduit
+P -- RechercherProduit
+P -- ScannerProduit
+P -- ValiderPrepCommande
+
+
+
+Ad -- GérerProduits
+Ad -- ModifierCommande
+Ad -- GererBonsReduction
+
+
+
+
+
+
+@enduml
