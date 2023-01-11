@@ -1,0 +1,30 @@
+@startuml Activité Préparateur
+
+scale 0.75
+
+title GererPanier
+
+
+|DRIVE|
+start
+
+
+split
+:ajouter produit selectionné;
+    if(produit disponible?)then(oui)
+    else (non)
+        :suggerer produit de remplacement;
+        :afficher magasins où produit dispo;
+    endif        
+split again
+:afficher panier;
+split
+:modifier produit;
+split again
+:supprimer produit;
+end split
+:afficher panier updaté;
+end split
+stop
+
+@enduml

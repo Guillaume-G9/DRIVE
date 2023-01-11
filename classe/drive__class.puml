@@ -1,0 +1,174 @@
+@startuml Diagramme de classe
+
+scale 0.75
+
+hide circle
+skinparam classAttributeIconSize 0
+
+class Produit {
+    -int codebarre
+    -string nom
+    -string description
+    -float price
+    -float poids
+    -float volume
+    -string type
+    -string marque    
+}
+
+class ProduitAlimentaire extends Produit {
+    -string nutriscore
+}
+
+class Stock {
+    -int quantité
+    -int emplacement
+}
+class Creneau {
+    -date Date
+    -string status   
+}
+
+class Capacite {
+    -int capacité
+}
+class Panier {
+    +ajouterProduit(produit, quantité)
+    +modifierPanier(produit, quantité)
+    +SupprimerProduit(produit)
+}
+
+class Commande {
+    -status
+    +retirerProduit(produit)
+    +modifierProduit(produit,nouveauProduit)
+}
+
+class Visiteur implements Consultation{
+    +login(identifiant, mdp)
+    +sélectionnerMagasin(localisationGPS)
+    +communiquerChatbot()
+}
+
+class Client extends Visiteur {
+    -identité
+    -email
+    -localisation
+    +choisirCreneau(creneau)
+    +passerCommande(panier)
+    +consulterProfil()
+    +choisirMagasinFavori(magasin)
+    +ajouterProduitFavori(produit)
+    +supprimerProduitFavori(produit)
+    +créerListeDeCourses(nom)
+    +ajouterProduitListe(produit,listeDeCourse)
+    +supprimerProduitListe(produit,listeDeCourse)
+    +modifierNomListeDeCourses(listeDeCourse,nom)
+    +supprimerListeDeCourses(listeDeCourse)
+    +ajouterUnProduitFavori(produit)
+    +supprimerProduitFavori(produit)
+    +retirerCommande(commande)
+    +annulerCommande(commande)
+}
+
+class Admin extends Visiteur {
+    -identité
+    -email
+    +ajouterProduitCatalogue(produit)
+    +modifierProduit(produit,nouveauProduit)
+    +supprimerProduit(produit)
+    +affecterRayon(rayon)
+    +supprimerRayon(rayon)
+    +ajouterProduitRayon(produit,rayon)
+    +supprimerProduitRayon(produit,rayon)
+    +creerBonDeReduction()
+    +setDiscountBonDeReduction(discount,BonDeReduction)
+    +supprimerBonDeReduction(BonDeReduction)
+}
+
+class Préparateur implements Consultation {
+    -identité
+    -email
+    +scannerProduit(produit)
+    +validerPreparationCommande(commande)
+    +updateStatusCommande(commande,status)
+    +updateProductStatus(commande,produit,statusProduit)        
+}
+
+class Magasin {
+    -int codeMagasin
+    -string ville
+    -string adresse
+    -int coordonneesGPS
+    -string directeur
+    +ajouterRayon(rayon)
+    +supprimerRayon(rayon)
+    +ajouterCreneau(creneau)
+    +updateStatusCreneau(creneau,status)
+    +updateCapaciteCreneau(creneau,capacité)
+    +supprimerCreneau(creneau)
+}
+
+class Rayon {
+    -string nom
+    +ajouterProduit(produit)
+    +supprimerProduit(produit)
+    +setRayonSuperieur(rayon)
+}
+
+class ListeDeCourses {
+    -string nom
+    +ajouterProduit(produit)
+    +supprimerProduit(produit)       
+}
+
+class BonDeReduction {
+    -float discount
+    -string nom
+    -date date
+    -string conditions
+}
+
+interface Consultation {
+    +consulterPanier(panier)
+    +consulterCatalogue(typeCatalogue, magasin)
+    +consulterProduit(produit, magasin)
+    +rechercherSimpleProduit(keywords)
+    +rechercherAvanceeProduit(rayon,marque,type,price)
+}
+
+class Recapitulatif{
+    -int quantité
+    -string statusProduit
+}
+
+Produit "0..*" --> "0..1" Panier
+'Produit "0..*" --> "0..*" Commande
+Produit "0..*"-->"1" Recapitulatif
+Recapitulatif "1"-->"0..*" Commande
+
+Client "1" --> "0..*"  Commande
+Client "1" --> "1" Panier
+Produit "0..*"-->"1" Stock
+Stock "1"-->"0..*" Magasin
+'Produit "0..*"--> "0..*" Magasin
+Préparateur "0..1" --> "0..*" Commande
+Produit "0..*" --> "1" Rayon
+Magasin "0..*" --> "0..*" Rayon
+Commande "0..10" --> "1" Creneau
+Client "0..*"--> "0..1" Magasin
+ListeDeCourses "0..*" --> "1" Client
+ListeDeCourses "0..*" --> "0..*" Produit
+Client "0..*" --> "0..*" Produit
+Préparateur "0..*" --> "1..*" Magasin
+Rayon "0..*" -->"0..*" Admin
+ListeDeCourses "0..*"-->"1" Client
+Rayon "0..*" --> "0..1" Rayon : rayon supérieur
+'Magasin "0..*"--> "0..*" Creneau
+Magasin "0..*"--> "1" Capacite
+Capacite "1"--> "0..*" Creneau
+Client "0..*" --> "0..*" BonDeReduction
+
+
+
+@enduml

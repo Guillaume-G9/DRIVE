@@ -2,6 +2,7 @@
 
 scale 0.75
 
+title Passer une commande
 
 
 |DRIVE|
@@ -27,15 +28,6 @@ partition ProcessPrincipal {
 
 :gérer le panier;
 }
-':ajout de produit au panier;
-'if (produit en stock ?) then (oui)
- '   :ajout du produit au panier; 
-'else (non)
-  '  :affiche les magasins où produit dispo;
-'endif
-'split
-
-
 
 
 :validation panier;

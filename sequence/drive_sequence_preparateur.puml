@@ -4,18 +4,19 @@ title Préparer une Commande
 scale 0.8
 
 actor Préparateur as P
-actor Client as C
 actor Administrateur as Ad
+participant AppliDrive as Controller
 participant Database as DB
 participant ServiceDeNotification as ServiceNotif
-participant AppliDrive as Controller
+actor Client as C
 
 group Initialization
     ServiceNotif -> P: notifCommandeRecue(commande)
     P -> Controller: traitementCommande(commande)
     Controller->DB: updateOrderStatus(commande, statusCommande='en traitement')
     DB-->Controller: statusUpdated(status)
-    ServiceNotif --> Client : notifCommande(commande, statusCommande)
+    Controller -> ServiceNotif: commandePriseEnCharge(commande)
+    ServiceNotif --> C : notifCommande(commande, statusCommande)
 end
 
     loop commandeReady = false
@@ -39,7 +40,7 @@ group Préparation
     P->Controller: scanProduct(produit, quantity)
     Controller->DB: matchProduct(produit)
     DB-->Controller: productIsOK = true
-    Controller->Controller: removeProductFromOrder(produit)
+    Controller->Controller: changeProductStatus(produit, statusProduit)
     end loop
 end
     group Fin de procédure
@@ -49,6 +50,7 @@ end
         P->Controller: orderReadyToPickup()
         Controller->DB: updateOrderStatus(commande, statusCommande='prête')
         DB --> Controller: statusUpdated(status)
+        Controller -> ServiceNotif: commandeReady(commande)
         ServiceNotif -> C: notifOrderReady(commande)
     end
 

@@ -1,6 +1,6 @@
 @startuml Usecase
 
-scale 0.50
+scale 0.75
 
 :Visiteur: as V
 :Client: as C
@@ -14,81 +14,80 @@ Ad -|> V
 
 rectangle DRIVE {
 
+package Consultation {
 (Rechercher un produit) as RechercherProduit
 (Consulter le catalogue Global) as ConsulterCatalogueGlobal
 (Consulter le catalogue d'un rayon) as ConsulterRayon
 (Consulter le catalogue d'un magasin) as ConsulterCatalogueMagasin
 (Consulter un produit) as ConsulterProduit
-(S'authentifier) as Auth
-(Gérer le panier) as GererPanier
+}
+
+package EspaceClient {
 (Passer une commande) as PasserCommande
-(Consulter ses commandes) as ConsulterCommandeClient
-(Consulter les commandes) as ConsulterCommandes
-(Selectionner/Modifier Magasin) as SelectionMagasin
+(Consulter son Profil) as ConsulterProfil
 (Choisir/Modifier le magasin favori) as ChoisirMagasinFavoris
 (Gérer produit favori) as GererProduitsFavoris
 (Gérer liste de courses) as GererListeCourses
-(Gérer ses coordonnées) as GererCoordonnees
 (Choisir/Modifier son créneau) as ChoisirCreneau
-(Gérer les produits) as GérerProduits
-(ModifierCommande) as ModifierCommande
+(Gérer ses coordonnées) as GererCoordonnees
+(Retirer Commande) as RetirerCommande
+(Annuler Commande) as AnnulerCommande
+}
+
+
+package Admin {
 (Gérer bons de réduction) as GererBonsReduction
+(ModifierCommande) as ModifierCommande
+(Gérer les produits) as GérerProduits
+}
+
+package ActionSiteWeb {
+(Selectionner/Modifier Magasin) as SelectionMagasin
+(S'authentifier) as Auth
+(Gérer le panier) as GererPanier
 (Communiquer avec le chatbot) as CommunicationChatBot
+}
+
+(Consulter les commandes) as ConsulterCommandes
+
+package Preparateur {
 (Scanner produit) as ScannerProduit
 (Confirmer validation commande) as ValiderPrepCommande
+}
+
 (Notification Client) as NotifClient
-(Retirer Commande) as RetirerCommande
 
 }
 
 
 
 left to right direction
-V -- Auth
-V -- SelectionMagasin 
-V -- GererPanier
-V -- ConsulterCatalogueGlobal
-V -- ConsulterRayon
-V -- ConsulterCatalogueMagasin
-V -- ConsulterProduit
-V -- RechercherProduit
-V -- CommunicationChatBot
+V -- Consultation
+V -- ActionSiteWeb
 
 SelectionMagasin ..> ConsulterCatalogueMagasin  #red : include
 SelectionMagasin ..> ConsulterRayon  #red : include
 
 Auth <.. C #red : include
 
-NotifClient --- ServiceNotif
+NotifClient -- ServiceNotif
 NotifClient --> C
 
 
-C -- ChoisirCreneau
-C -- PasserCommande
-C -- ConsulterCommandeClient
-C -- ChoisirMagasinFavoris 
-C -- GererListeCourses
-C -- GererCoordonnees
-C -- GererProduitsFavoris
-C -- RetirerCommande
+C -- EspaceClient
+C -- ActionSiteWeb
 
 RetirerCommande ..> PasserCommande #red:include
 
 
 P ..> ConsulterCommandes #red : include
-P -- ConsulterCatalogueGlobal
-P -- ConsulterRayon
-P -- ConsulterCatalogueMagasin
-P -- ConsulterProduit
-P -- RechercherProduit
-P -- ScannerProduit
-P -- ValiderPrepCommande
+P -- Consultation
+P -- Preparateur
 
 
 
-Ad -- GérerProduits
-Ad -- ModifierCommande
-Ad -- GererBonsReduction
+Ad -- Admin
+Ad -- ConsulterCommandes
 
 
 

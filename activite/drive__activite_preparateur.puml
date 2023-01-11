@@ -2,6 +2,8 @@
 
 scale 0.75
 
+title Preparer une commande
+
 
 |DRIVE|
 start
@@ -28,6 +30,9 @@ partition PreparationCommande {
 repeat :commande ;
 :afficher produit à récupérer;
 if(produit indisponible?)then(oui)
+    if(optionSubstitution?)then (oui)
+    :remplacer par produit similaire;
+    endif
 :notifier produit manquant;
 :notifier manager;
 else (non)

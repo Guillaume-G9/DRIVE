@@ -17,6 +17,7 @@ group Initialization
     Client -> Controller: choisirMagasin(magasin)
     Controller --> Client: catalogueMagasin(magasin)
 
+    Controller -> Client: choisirCreneau()
     alt CreneauChoisi = true
         loop isFull = true
             Client -> Controller: setCreneau(creneau)
@@ -38,7 +39,7 @@ group Gestion de Panier
         Controller -> Controller:addToCart(produit, quantity)
         Controller --> Client: notifProduitAjoute(produit)
         else
-        Controller --> Client: notInstock(produit, listeMagasinDispo)
+        Controller --> Client: notInstock(produit, listeMagasinDispo, similarProduct)
         end alt
     end
 
@@ -84,10 +85,16 @@ Controller --> Client: formulairePaiement(commande, transaction)
 Client -> Controller: ValiderPaiement(commande, transaction)
 Controller -> BQ: payerCommande(transaction)
 alt paiementOk = false
-Controller -> Client: confirmCancelOrder(commande)
-Client --> Controller: confirmCancelOrder(commande)
-Controller -> Controller: deleteOrder(commande)
-Controller --> Client: notifOrderDeleted(commande)
+
+    Controller -> Client: askCancelOrder(commande)
+    alt isDelete = true
+        Client --> Controller: confirmCancelOrder(commande)
+        Controller -> Controller: deleteOrder(commande)
+        Controller --> Client: notifOrderDeleted(commande)
+    else     
+        Client --> Controller: resumeOrder(commande)
+    end alt
+    
 else
 BQ --> Controller: paiementOk
 Controller --> Client: notifPaiementValide(transaction)
