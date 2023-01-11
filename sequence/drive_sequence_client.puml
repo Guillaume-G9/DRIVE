@@ -14,52 +14,52 @@ actor Preparateur
 
 group Initialization
 
-    Client -> Controller: choisirMagasin(magasin)
-    Controller --> Client: catalogueMagasin(magasin)
+    Client -> Controller++: choisirMagasin(magasin)
+    Controller --> Client--: catalogueMagasin(magasin)
 
     Controller -> Client: choisirCreneau()
     alt CreneauChoisi = true
         loop isFull = true
-            Client -> Controller: setCreneau(creneau)
-            Controller -> DB: controlCreneau(creneau)
-            DB --> Controller: creneau(isFull)
+            Client -> Controller++: setCreneau(creneau)
+            Controller -> DB++: controlCreneau(creneau)
+            DB --> Controller--: creneau(isFull)
             Controller --> Client: creneauStatus(creneau, isFull)
         end loop
-    Controller --> Client: notificationCreneau(creneau)
+    Controller --> Client--: notificationCreneau(creneau)
     end alt
 end
 
 group Gestion de Panier
 
     group Ajout au panier
-        Client -> Controller: ajouterProduit(produit, quantity)
+        Client -> Controller++: ajouterProduit(produit, quantity)
         Controller -> DB: verifierStock(produit)
         DB --> Controller: instock
         alt inStock = true
         Controller -> Controller:addToCart(produit, quantity)
         Controller --> Client: notifProduitAjoute(produit)
         else
-        Controller --> Client: notInstock(produit, listeMagasinDispo, similarProduct)
+        Controller --> Client--: notInstock(produit, listeMagasinDispo, similarProduct)
         end alt
     end
 
     group Modifier Panier
-        Client -> Controller: modifierPanier(panier,produit, quantity)
+        Client -> Controller++: modifierPanier(panier,produit, quantity)
         Controller -> Controller: updateCart(panier, produit, quantity)
-        Controller --> Client: panier(panier)
+        Controller --> Client--: panier(panier)
     end
 
     group Supprimer produit
-        Client -> Controller: suprimmerProduit(produit)
+        Client -> Controller++: suprimmerProduit(produit)
         Controller -> Controller: deleteProduct(produit)
-        Controller --> Client: panier(panier)
+        Controller --> Client--: panier(panier)
     end 
 end 
 
-Client -> Controller: consulterPanier()
-Controller -->Client: panier
+Client -> Controller++: consulterPanier()
+Controller -->Client--: panier
 
-Client -> Controller: validerPanier(panier)
+Client -> Controller++: validerPanier(panier)
 alt isValid = false
 Client -> Controller: cartNotValid(panier)
 Controller -> Controller: deleteCart(panier)
@@ -72,8 +72,8 @@ Client --> Controller: creneauIsOk(creneau)
 else 
     loop isFull = true
                 Client -> Controller: setCreneau(creneau)
-                Controller -> DB: controlCreneau(creneau)
-                DB --> Controller: creneau(isFull)
+                Controller -> DB++: controlCreneau(creneau)
+                DB --> Controller--: creneau(isFull)
                 Controller --> Client: creneauStatus(creneau, isFull)
     end loop
 end alt
@@ -83,8 +83,9 @@ loop paiementOk = false
 Client -> Controller: initierPaiement(commande)
 Controller --> Client: formulairePaiement(commande, transaction)
 Client -> Controller: ValiderPaiement(commande, transaction)
-Controller -> BQ: payerCommande(transaction)
-alt paiementOk = false
+Controller -> BQ++: payerCommande(transaction)
+BQ --> Controller--: statusPaiement
+alt statusPaiement = false
 
     Controller -> Client: askCancelOrder(commande)
     alt isDelete = true
@@ -96,7 +97,6 @@ alt paiementOk = false
     end alt
     
 else
-BQ --> Controller: paiementOk
 Controller --> Client: notifPaiementValide(transaction)
 end alt
 
@@ -108,7 +108,7 @@ end loop
 par Fin de process
 Notif --> Client: commandeValide(commande)
 Controller -> DB: enregistrerCommande(commande)
-Controller -> Notif: envoyerNotifCommande(commande)
+Controller -> Notif--: envoyerNotifCommande(commande)
 Notif --> Preparateur: commandeRecue(commande)
 end par
 end alt

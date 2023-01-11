@@ -32,6 +32,7 @@ package EspaceClient {
 (Gérer ses coordonnées) as GererCoordonnees
 (Retirer Commande) as RetirerCommande
 (Annuler Commande) as AnnulerCommande
+(Utiliser bon de réduction) as UtiliserBon
 }
 
 

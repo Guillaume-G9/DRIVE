@@ -13,44 +13,44 @@ actor Client as C
 group Initialization
     ServiceNotif -> P: notifCommandeRecue(commande)
     P -> Controller: traitementCommande(commande)
-    Controller->DB: updateOrderStatus(commande, statusCommande='en traitement')
-    DB-->Controller: statusUpdated(status)
-    Controller -> ServiceNotif: commandePriseEnCharge(commande)
-    ServiceNotif --> C : notifCommande(commande, statusCommande)
+    Controller->DB++: updateOrderStatus(commande, statusCommande='en traitement')
+    DB-->Controller--: statusUpdated(status)
+    Controller -> ServiceNotif++: commandePriseEnCharge(commande)
+    ServiceNotif --> C--: notifCommande(commande, statusCommande)
 end
 
     loop commandeReady = false
 group Préparation
-    P -> Controller: requestProduct(produit)
+    P -> Controller++: requestProduct(produit)
     alt inStock = false
-    Controller-->P: notificationOutofStock(produit)
+    Controller-->P--: notificationOutofStock(produit)
     P->Ad: OutofStock(produit, message)
     alt replaceProduct = true
-    Controller->Controller: replaceBySimilarProduct(produit, similarProduct, commande)
-    Controller-->P: notifProduitRemplacé(produit, similarProduct)
+    Controller->Controller++: replaceBySimilarProduct(produit, similarProduct, commande)
+    Controller-->P--: notifProduitRemplacé(produit, similarProduct)
     else
-    Controller->Controller: deleteProductFromOrder(produit)
+    Controller->Controller++: deleteProductFromOrder(produit)
     Controller-->P: notifProduitSupprimé(produit)
-    Controller->Controller: updateOrder(price, commande)
+    Controller->Controller--: updateOrder(price, commande)
     end alt
     end alt
 
 
     Controller-->P: productData(produit, emplacement)
     P->Controller: scanProduct(produit, quantity)
-    Controller->DB: matchProduct(produit)
-    DB-->Controller: productIsOK = true
+    Controller->DB++: matchProduct(produit)
+    DB-->Controller--: productIsOK = true
     Controller->Controller: changeProductStatus(produit, statusProduit)
     end loop
 end
     group Fin de procédure
-        P->Controller: commandeValidee(commande)
-        Controller->DB: updateOrderStatus(commande, statusCommande='validée')
-        DB -->Controller: statusUpdated(status)
+        P->Controller++: commandeValidee(commande)
+        Controller->DB++: updateOrderStatus(commande, statusCommande='validée')
+        DB -->Controller--: statusUpdated(status)
         P->Controller: orderReadyToPickup()
         Controller->DB: updateOrderStatus(commande, statusCommande='prête')
         DB --> Controller: statusUpdated(status)
-        Controller -> ServiceNotif: commandeReady(commande)
+        Controller -> ServiceNotif--: commandeReady(commande)
         ServiceNotif -> C: notifOrderReady(commande)
     end
 
